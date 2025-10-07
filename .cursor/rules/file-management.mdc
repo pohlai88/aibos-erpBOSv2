@@ -1,0 +1,30 @@
+# File Management Rules
+
+## Mandatory File Cleanup Standards
+
+### Legacy File Detection
+- **NEVER** create files with extensions: `.old`, `.backup`, `.bak`, `*~`
+- **ALWAYS** remove legacy files before committing
+- **VERIFY** no temporary files remain in the workspace
+
+### File Organization
+- **ENFORCE** clean workspace principles
+- **PREVENT** creation of unnecessary files/folders
+- **VALIDATE** file locations before creation
+- **MAINTAIN** single source of truth (SSOT) principles
+
+### Pre-commit Validation
+- Check for legacy files before commits
+- Validate duplicate config files
+- Ensure PowerShell compatibility on Windows
+
+### Commands for Legacy File Detection
+```powershell
+Get-ChildItem -Recurse -Include "*.old", "*.backup", "*.bak", "*~" | Where-Object { $_.FullName -notlike "*node_modules*" }
+```
+
+## Enforcement Actions
+1. **STOP** - Don't proceed with violating actions
+2. **CLEAN** - Remove legacy files immediately  
+3. **VERIFY** - Run linting and type checks
+4. **ASK** - Request clarification when unclear

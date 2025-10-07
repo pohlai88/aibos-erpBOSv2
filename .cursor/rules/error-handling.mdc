@@ -1,0 +1,90 @@
+# Error Handling and HITL Debugging Rules
+
+## Error Resolution Standards
+
+### No Compromise Policy
+
+- **NEVER** compromise on error resolution or make assumptions
+- **NEVER** proceed with broken or failing code
+- **NEVER** ignore errors or warnings
+- **NEVER** provide workarounds that mask underlying issues
+
+### Error Analysis Requirements
+
+- **ANALYZE** all errors thoroughly before attempting resolution
+- **IDENTIFY** root causes, not just symptoms
+- **DOCUMENT** error context, environment, and reproduction steps
+- **VALIDATE** understanding of the error before proposing solutions
+
+### HITL Debugging Protocol
+
+When encountering errors that cannot be resolved:
+
+1. **STOP** - Immediately halt current operations
+2. **SUMMARIZE** - Provide comprehensive error summary including:
+   - Error messages and stack traces
+   - Environment details (OS, Node version, package versions)
+   - Steps that led to the error
+   - Current system state
+3. **REQUEST** - Ask for Human-in-the-Loop debugging assistance
+4. **WAIT** - Do not proceed until human guidance is provided
+
+### Error Summary Format
+
+```
+## Error Summary for HITL Debugging
+
+### Error Details
+- **Type**: [Error type/category]
+- **Message**: [Exact error message]
+- **Stack Trace**: [Full stack trace if available]
+
+### Environment Context
+- **OS**: [Operating system and version]
+- **Node.js**: [Version]
+- **Package Manager**: [pnpm/npm version]
+- **Project State**: [Current working directory, git status]
+
+### Reproduction Steps
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+### Attempted Solutions
+- [List any attempted fixes]
+- [Why they failed]
+
+### Request for Human Assistance
+[Specific question or guidance needed]
+```
+
+### Prohibited Actions
+
+- **DO NOT** make educated guesses about error causes
+- **DO NOT** try random solutions without understanding
+- **DO NOT** modify code without clear understanding of the issue
+- **DO NOT** proceed with partial fixes
+- **DO NOT** ignore error messages or warnings
+
+### Required Actions
+
+- **DO** provide complete error context
+- **DO** ask specific questions for guidance
+- **DO** wait for human input before proceeding
+- **DO** maintain system integrity during debugging
+- **DO** document all debugging attempts
+
+## File Types This Rule Applies To
+
+- All files and operations
+- Terminal commands and scripts
+- Package installations and configurations
+- Git operations and version control
+- Build and deployment processes
+
+## Enforcement Actions
+
+1. **STOP** - Immediately halt on unresolved errors
+2. **SUMMARIZE** - Provide comprehensive error analysis
+3. **REQUEST** - Ask for HITL debugging assistance
+4. **WAIT** - Do not proceed without human guidance

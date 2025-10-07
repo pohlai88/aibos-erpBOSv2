@@ -1,0 +1,63 @@
+# UI Standards Rules
+
+## UI Development Standards
+
+### Theme and Accessibility
+
+- **ENFORCE** dark-first theme approach
+- **REQUIRE** WCAG 2.2 AAA accessibility compliance
+- **IMPLEMENT** enhanced-token or index.css for all styling
+- **AVOID** hardcoded styles completely
+
+### Design System
+
+- **USE** standard premium Tailwind configuration
+- **AVOID** custom Tailwind customizations in repository
+- **MAINTAIN** SSOT (Single Source of Truth) principles
+- **ENFORCE** anti-drift and standardization
+
+### UI Architecture
+
+- **IMPLEMENT** multiple small, domain-specific app shells
+- **AVOID** large, monolithic shells
+- **MAINTAIN** UI interface shell as SSOT
+- **ENSURE** flexibility for AI coding partner collaboration
+
+### Component Standards
+
+- **USE** AIBOS UI package (aibos-ui v0.1.1) as primary component library
+- **MAINTAIN** bundle size <30KB (AIBOS UI: 29.70KB - 87% under budget)
+- **ENSURE** render performance <16ms (60fps target)
+- **KEEP** memory usage <50MB for optimal performance
+- **FOLLOW** Kernel-UI platform v2.0 boilerplate patterns
+- **IMPLEMENT** battle-tested architecture patterns
+- **ENSURE** complete mobile excellence with touch optimization
+
+### AIBOS UI Integration
+
+- **IMPORT** components from 'aibos-ui' package
+- **VALIDATE** UI components through verification pipeline
+- **ENSURE** 100% TypeScript coverage for all UI components
+- **MAINTAIN** WCAG 2.2 AAA accessibility compliance
+- **MONITOR** bundle size and performance metrics
+- **USE** ErrorBoundary component for error handling
+- **IMPLEMENT** tree-shaking for optimal bundle size
+
+### Integration Guidelines
+
+- **REFERENCE** ERPNext as guideline pillar
+- **ADOPT** best practices from ERPNext, Xero, Zoho, and QuickBooks
+- **OPTIMIZE** with UI tweaks for development
+- **MAINTAIN** AI-native intelligence throughout
+
+## File Types This Rule Applies To
+
+- `.tsx`, `.ts`, `.jsx`, `.js` (React/TypeScript files)
+- `.css`, `.scss` (Styling files)
+
+## Enforcement Actions
+
+1. **STOP** - Don't proceed with hardcoded styles
+2. **CONVERT** - Use enhanced-token or index.css
+3. **VERIFY** - Check accessibility compliance
+4. **ASK** - Request clarification when unclear

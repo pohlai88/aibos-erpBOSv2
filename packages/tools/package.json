@@ -1,0 +1,17 @@
+{
+  "name": "@aibos/tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AI-BOS verification and tooling package",
+  "scripts": {
+    "verify:versions": "node ../../scripts/verify/version-check.mjs",
+    "verify:syncpack": "node ../../scripts/verify/syncpack.mjs",
+    "verify:pkg-names": "node ../../scripts/verify/pkg-names.mjs",
+    "verify:ui-validation": "node ../../scripts/verify/ui-validation.mjs",
+    "verify:contracts": "node ../../scripts/verify/contracts.mjs",
+    "verify:client": "node ../../scripts/verify/client-gen.mjs",
+    "verify:lint": "node ../../scripts/verify/lint.mjs",
+    "verify:types": "node ../../scripts/verify/types.mjs",
+    "verify:depcruise": "node ../../scripts/verify/depcruise.mjs"
+  }
+}

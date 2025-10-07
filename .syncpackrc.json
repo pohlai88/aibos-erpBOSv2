@@ -1,0 +1,161 @@
+{
+  "versionGroups": [
+    {
+      "label": "Workspace packages",
+      "packages": [
+        "@aibos/*"
+      ],
+      "dependencies": [
+        "@aibos/*"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Core Development Tools",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "typescript",
+        "eslint",
+        "prettier",
+        "rimraf",
+        "syncpack",
+        "tsx",
+        "dependency-cruiser",
+        "turbo"
+      ],
+      "range": ""
+    },
+    {
+      "label": "Next.js Ecosystem",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "next"
+      ],
+      "range": ""
+    },
+    {
+      "label": "Validation & Schema",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "zod"
+      ],
+      "range": ""
+    },
+    {
+      "label": "UI Components",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "aibos-ui"
+      ],
+      "range": "^"
+    },
+    {
+      "label": "React Ecosystem",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "range": "^"
+    },
+    {
+      "label": "Node Types",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "@types/node"
+      ],
+      "range": "^"
+    }
+  ],
+  "semverGroups": [
+    {
+      "label": "Exact versions for locked-down stack",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "typescript",
+        "eslint",
+        "prettier",
+        "rimraf",
+        "syncpack",
+        "tsx",
+        "dependency-cruiser",
+        "turbo",
+        "next",
+        "zod"
+      ],
+      "range": ""
+    },
+    {
+      "label": "Caret ranges for UI and React",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "aibos-ui",
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+        "@types/node"
+      ],
+      "range": "^"
+    }
+  ],
+  "lintRules": {
+    "forbidden": [],
+    "required": []
+  },
+  "lintSemverRanges": {
+    "default": "semver",
+    "exceptions": [
+      {
+        "packages": [
+          "**"
+        ],
+        "dependencies": [
+          "typescript",
+          "eslint",
+          "prettier",
+          "rimraf",
+          "syncpack",
+          "tsx",
+          "dependency-cruiser",
+          "turbo",
+          "next",
+          "zod"
+        ],
+        "range": ""
+      },
+      {
+        "packages": [
+          "**"
+        ],
+        "dependencies": [
+          "aibos-ui",
+          "react",
+          "react-dom",
+          "@types/react",
+          "@types/react-dom",
+          "@types/node"
+        ],
+        "range": "^"
+      }
+    ]
+  }
+}

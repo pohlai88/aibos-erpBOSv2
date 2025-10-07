@@ -1,0 +1,41 @@
+# PowerShell Compatibility Rules
+
+## Windows PowerShell Compatibility
+
+### Command Chaining
+- **NEVER** use `&&` operator for command chaining
+- **USE** `;` or separate commands instead
+- **ENSURE** PowerShell-friendly syntax for all terminal instructions
+- **VALIDATE** commands work in Windows PowerShell environment
+
+### Package Manager Commands
+- **USE** `pnpm` for Node.js package management
+- **IMPLEMENT** pnpm workspaces for monorepo structure
+- **RUN** commands like: `pnpm install`, `pnpm store prune`, `pnpm -w dedupe`
+- **ENSURE** CI commands use pnpm: `pnpm -w test`, `pnpm run ci:contracts`, `pnpm -w build`
+
+### Development Commands
+- **START** auth package with: `pnpm --filter @aibos/auth dev`
+- **USE** `uv` for Python task runner (for speed)
+- **IMPLEMENT** Turborepo as monorepo task runner
+
+### Pre-commit Hooks
+- **ENSURE** PowerShell-compatible pre-commit validation
+- **VALIDATE** legacy files before commits
+- **CHECK** duplicate config files
+- **MAINTAIN** Windows development environment compatibility
+
+## Example Commands
+```powershell
+# Correct PowerShell syntax
+pnpm install; pnpm run verify
+
+# Incorrect (don't use)
+pnpm install && pnpm run verify
+```
+
+## Enforcement Actions
+1. **STOP** - Don't proceed with PowerShell-incompatible commands
+2. **CONVERT** - Use PowerShell-compatible syntax
+3. **VERIFY** - Test commands in PowerShell environment
+4. **ASK** - Request clarification when unclear

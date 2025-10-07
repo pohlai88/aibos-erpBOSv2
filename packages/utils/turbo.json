@@ -1,0 +1,19 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": [
+        "src/**",
+        "package.json",
+        "tsconfig*.json"
+      ],
+      "outputs": ["dist/**"]
+    },
+    "test": {
+      "inputs": ["src/**", "vitest.config.*"]
+    },
+    "type-check": {
+      "inputs": ["src/**", "tsconfig*.json"]
+    }
+  }
+}

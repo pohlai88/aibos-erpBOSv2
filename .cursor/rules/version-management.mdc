@@ -1,0 +1,41 @@
+# Version Management Rules
+
+## Configuration File Standards
+
+### Date Format Standards
+- **ENFORCE** international (ISO 8601) date format
+- **MAINTAIN** consistency across all configuration files
+- **VALIDATE** date format in all config files
+
+### Configuration Management
+- **MAINTAIN** single source of truth for project setups
+- **FOLLOW** textbook configuration as SSOT
+- **ENFORCE** project conventions consistently
+- **AVOID** configuration drift and duplication
+
+### Monorepo Structure
+- **USE** Turborepo as task runner
+- **IMPLEMENT** pnpm workspaces for Node.js
+- **MAINTAIN** pnpm as package manager and workspace manager
+- **ENSURE** Python uses uv for task runner (speed optimization)
+
+### Version Control
+- **TRACK** `.cursor/rules/` directory in git
+- **ENSURE** all team members get the same rules
+- **MAINTAIN** consistent rule enforcement across team
+- **EVOLVE** rules with the project
+
+### Package Management Commands
+- **USE** `pnpm install`, `pnpm store prune`, `pnpm -w dedupe`
+- **RUN** CI commands: `pnpm -w test`, `pnpm run ci:contracts`, `pnpm -w build`
+- **START** development: `pnpm --filter @aibos/auth dev`
+
+## File Types This Rule Applies To
+- `.json`, `.js`, `.cjs`, `.ts` (Configuration files)
+- `.yml`, `.yaml` (YAML configuration files)
+
+## Enforcement Actions
+1. **STOP** - Don't proceed with incorrect date formats
+2. **CONVERT** - Use ISO 8601 date format
+3. **VERIFY** - Check configuration consistency
+4. **ASK** - Request clarification when unclear

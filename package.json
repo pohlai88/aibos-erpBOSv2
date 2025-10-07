@@ -1,0 +1,85 @@
+{
+    "name": "aibos-erpbos",
+    "version": "1.0.0",
+    "description": "AI-BOS ERP Business Operating System",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "turbo:verify": "turbo run verify:* --filter=@aibos/tools",
+        "turbo:verify:versions": "turbo run verify:versions --filter=@aibos/tools",
+        "turbo:verify:syncpack": "turbo run verify:syncpack --filter=@aibos/tools",
+        "turbo:verify:pkg-names": "turbo run verify:pkg-names --filter=@aibos/tools",
+        "turbo:verify:ui-validation": "turbo run verify:ui-validation --filter=@aibos/tools",
+        "verify:versions": "node scripts/verify/version-check.mjs",
+        "verify:client": "node scripts/verify/client-gen.mjs",
+        "verify:lint": "node scripts/verify/lint.mjs",
+        "verify:types": "node scripts/verify/types.mjs",
+        "syncpack:check": "pnpm -w exec syncpack list-mismatches",
+        "syncpack:fix": "pnpm -w exec syncpack fix-mismatches",
+        "verify:syncpack": "node scripts/verify/syncpack.mjs",
+        "verify:pkg-names": "node scripts/verify/pkg-names.mjs",
+        "verify:ui-validation": "node scripts/verify/ui-validation.mjs",
+        "verify:depcruise": "node scripts/verify/depcruise.mjs",
+        "depcruise": "depcruise --config .dependency-cruiser.cjs .",
+        "contracts:check": "pnpm run verify:contracts",
+        "client:gen": "pnpm run verify:client",
+        "dev": "turbo run dev --filter=./apps/main",
+        "build": "turbo run build",
+        "test": "turbo run test",
+        "clean": "turbo run clean && pnpm -w store prune",
+        "ci:contracts": "pnpm run contracts:check",
+        "store:prune": "pnpm store prune",
+        "dedupe": "pnpm -w dedupe",
+        "lint": "pnpm run verify:lint",
+        "type-check": "pnpm run verify:types",
+        "pre-commit": "powershell -File .git/hooks/pre-commit"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.3.1",
+        "@eslint/js": "^9.37.0",
+        "@typescript-eslint/eslint-plugin": "^8.46.0",
+        "@typescript-eslint/parser": "^8.46.0",
+        "dependency-cruiser": "16.0.0",
+        "eslint": "9.36.0",
+        "eslint-plugin-boundaries": "^5.0.2",
+        "prettier": "3.6.2",
+        "rimraf": "6.0.1",
+        "syncpack": "13.0.4",
+        "tsup": "^8.0.0",
+        "tsx": "4.20.6",
+        "turbo": "2.5.8",
+        "typescript": "5.9.3"
+    },
+    "engines": {
+        "node": ">=22.18.0",
+        "pnpm": "10.18.x"
+    },
+    "packageManager": "pnpm@10.18.1",
+    "devEngines": {
+        "runtime": {
+            "name": "node",
+            "version": "22.20.0"
+        }
+    },
+    "pnpm": {
+        "overrides": {
+            "next": "15.5.4",
+            "zod": "4.1.12",
+            "eslint": "9.36.0",
+            "prettier": "3.6.2",
+            "rimraf": "6.0.1",
+            "syncpack": "13.0.4",
+            "tsx": "4.20.6",
+            "typescript": "5.9.3"
+        }
+    },
+    "dependencies": {
+        "@types/react": "^18.3.12",
+        "@types/react-dom": "^18.3.1",
+        "aibos-ui": "^0.1.1",
+        "next": "15.5.4",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "zod": "4.1.12"
+    }
+}

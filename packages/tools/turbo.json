@@ -1,0 +1,48 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "verify:versions": {
+      "cache": true,
+      "inputs": ["../../scripts/verify/version-check.mjs", "../../package.json", "../../pnpm-lock.yaml"],
+      "outputs": ["../../reports/version-check.json"]
+    },
+    "verify:syncpack": {
+      "cache": true,
+      "inputs": ["../../scripts/verify/syncpack.mjs", "../../package.json"],
+      "outputs": ["../../reports/syncpack.json"]
+    },
+    "verify:pkg-names": {
+      "cache": true,
+      "inputs": ["../../scripts/verify/pkg-names.mjs", "../../packages/**/package.json", "../../apps/**/package.json"],
+      "outputs": ["../../reports/pkg-names.json"]
+    },
+    "verify:ui-validation": {
+      "cache": true,
+      "inputs": ["../../scripts/verify/ui-validation.mjs", "../../packages/**", "../../apps/**"],
+      "outputs": ["../../reports/ui-validation.json"]
+    },
+    "verify:contracts": {
+      "dependsOn": [],
+      "inputs": ["../../scripts/verify/contracts.mjs", "../../packages/contracts/**", "../../openapi/**"],
+      "outputs": ["../../reports/contracts.json"]
+    },
+    "verify:client": {
+      "dependsOn": ["verify:contracts"],
+      "inputs": ["../../scripts/verify/client-gen.mjs", "../../packages/**/openapi/*.json"],
+      "outputs": ["../../apps/**/generated/**", "../../packages/**/generated/**"]
+    },
+    "verify:lint": {
+      "inputs": ["../../**/*.{js,ts,tsx,json,cjs,mjs}", "../../eslint.config.*", "../../.eslint*"],
+      "outputs": []
+    },
+    "verify:types": {
+      "dependsOn": ["^build"],
+      "inputs": ["../../**/*.ts", "../../**/*.tsx", "../../tsconfig*.json"],
+      "outputs": []
+    },
+    "verify:depcruise": {
+      "cache": true,
+      "outputs": ["../../reports/depcruise.json"]
+    }
+  }
+}

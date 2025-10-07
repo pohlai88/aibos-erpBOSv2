@@ -1,0 +1,52 @@
+# Code Quality Rules
+
+## Architecture and Quality Enforcement
+
+### Code Standards
+
+- **ENFORCE** 95% test coverage across all features and functions
+- **MAINTAIN** clean architecture principles
+- **FOLLOW** dependency-cruiser architecture validation
+- **ENSURE** TypeScript compliance and linting
+
+### Testing Requirements
+
+- **REQUIRE** comprehensive test coverage
+- **VALIDATE** functionality of files under test
+- **PREVENT** tests that go out of scope
+- **JUSTIFY** any test failures with correct reasoning
+
+### Architecture Validation
+
+- **USE** dependency-cruiser for JS architecture tests
+- **IMPLEMENT** import-linter, ruff, and mypy for Python tests
+- **ENFORCE** clean architecture patterns
+- **MAINTAIN** separation of concerns
+
+### Quality Gates
+
+- **RUN** lint and TypeScript checks after changes
+- **CHECK** for diagnostics and errors (duplicate object keys)
+- **VALIDATE** before proceeding to subsequent steps
+- **ENSURE** no over-engineering - keep solutions simple and straightforward
+- **FOLLOW** error-handling.mdc for unresolved issues
+
+### Error Handling
+
+- **REFER** to error-handling.mdc for comprehensive error resolution protocol
+- **ENFORCE** HITL debugging for unresolved errors
+- **MAINTAIN** system integrity during debugging processes
+
+## Verification Commands
+
+```powershell
+pnpm run depcruise
+pnpm run verify
+```
+
+## Enforcement Actions
+
+1. **STOP** - Don't proceed with violating actions
+2. **CLEAN** - Fix code quality issues immediately
+3. **VERIFY** - Run comprehensive checks
+4. **ASK** - Request clarification when unclear
