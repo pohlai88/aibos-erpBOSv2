@@ -75,6 +75,11 @@ playwright/.cache/
 .rts2_cache_es/
 .rts2_cache_umd/
 
+# TS incremental cache
+**/*.tsbuildinfo
+**/node_modules/.cache/
+node_modules/.cache/
+
 # Optional npm cache
 .npm
 

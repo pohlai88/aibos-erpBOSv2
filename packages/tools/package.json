@@ -13,5 +13,9 @@
     "verify:lint": "node ../../scripts/verify/lint.mjs",
     "verify:types": "node ../../scripts/verify/types.mjs",
     "verify:depcruise": "node ../../scripts/verify/depcruise.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.8",
+    "typescript": "5.9.3"
   }
 }

@@ -8,19 +8,19 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "rimraf dist && tsup src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "build": "tsup",
     "type-check": "tsc -p tsconfig.build.json --noEmit",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist node_modules/.cache"
   },
   "dependencies": {
     "zod": "4.1.12"

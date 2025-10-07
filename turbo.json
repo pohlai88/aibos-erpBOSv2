@@ -1,6 +1,40 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "dist/**",
+        "build/**",
+        "out/**"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "coverage/**",
+        ".vitest/**",
+        "reports/test/**"
+      ]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "type-check": {
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    },
     "verify:versions": {
       "cache": true,
       "inputs": [
@@ -93,39 +127,11 @@
         "reports/depcruise.json"
       ]
     },
-    "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".next/**",
-        "dist/**",
-        "build/**",
-        "out/**"
-      ]
-    },
-    "test": {
-      "dependsOn": [
-        "build"
-      ],
-      "outputs": [
-        "coverage/**",
-        ".vitest/**",
-        "reports/test/**"
-      ]
-    },
     "depcruise": {
       "cache": true,
       "outputs": [
         "reports/depcruise/**"
       ]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "clean": {
-      "cache": false
     }
   }
 }

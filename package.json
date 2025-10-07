@@ -51,7 +51,7 @@
         "typescript": "5.9.3"
     },
     "engines": {
-        "node": ">=22.18.0",
+        "node": "22.20.0",
         "pnpm": "10.18.x"
     },
     "packageManager": "pnpm@10.18.1",
@@ -74,12 +74,6 @@
         }
     },
     "dependencies": {
-        "@types/react": "^18.3.12",
-        "@types/react-dom": "^18.3.1",
-        "aibos-ui": "^0.1.1",
-        "next": "15.5.4",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
         "zod": "4.1.12"
     }
 }

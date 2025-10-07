@@ -1,19 +1,37 @@
 {
-  "extends": ["//"],
+  "extends": [
+    "//"
+  ],
   "tasks": {
     "build": {
       "inputs": [
         "src/**",
         "package.json",
-        "tsconfig*.json"
+        "tsconfig*.json",
+        "!dist/**",
+        "!node_modules/**",
+        "!node_modules/.cache/**",
+        "!.turbo/**"
       ],
-      "outputs": ["dist/**"]
+      "outputs": [
+        "dist/**"
+      ]
     },
     "test": {
-      "inputs": ["src/**", "vitest.config.*"]
+      "inputs": [
+        "src/**",
+        "vitest.config.*",
+        "!node_modules/**",
+        "!node_modules/.cache/**"
+      ]
     },
     "type-check": {
-      "inputs": ["src/**", "tsconfig*.json"]
+      "inputs": [
+        "src/**",
+        "tsconfig*.json",
+        "!node_modules/**",
+        "!node_modules/.cache/**"
+      ]
     }
   }
 }
