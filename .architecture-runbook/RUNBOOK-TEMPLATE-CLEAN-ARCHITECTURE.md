@@ -16,12 +16,14 @@
 ## 🎯 Executive Summary
 
 ### Business Value
+
 - **Primary Function**: `<MODULE_DESCRIPTION>`
 - **Business Impact**: `<BUSINESS_IMPACT>`
 - **User Personas**: `<USER_PERSONAS>`
 - **Success Metrics**: `<SUCCESS_METRICS>`
 
 ### Architecture Compliance
+
 This module **strictly follows** the AIBOS 8‑layer clean architecture:
 
 ```
@@ -32,10 +34,53 @@ DB → Adapters → Ports → Services → Policies → Contracts → API → UI
 
 ---
 
+## 📁 Canonical Folder Layout
+
+```
+aibos-erpBOS/
+├── apps/
+│   ├── bff/
+│   │   ├── app/
+│   │   │   └── api/
+│   │   │       └── <module>/
+│   │   └── lib/
+│   │       └── factories/
+│   │           └── <entity>-service-factory.ts
+│   └── web/
+│       ├── app/
+│       │   └── (dashboard)/
+│       │       └── <module>/
+│       ├── components/
+│       └── lib/
+├── packages/
+│   ├── adapters/
+│   │   └── src/
+│   │       ├── db/
+│   │       │   └── <module>/
+│   │       └── <module>/
+│   ├── ports/
+│   │   └── src/
+│   │       └── <module>/
+│   ├── services/
+│   │   └── src/
+│   │       └── <module>/
+│   ├── policies/
+│   │   └── src/
+│   │       └── <module>/
+│   └── contracts/
+│       └── src/
+│           └── <module>/
+```
+
+> **Convention**: Apps use Next.js layout (`app/`, `lib/`, `components/` — **no `src/`**). Packages use `src/` and compile to `dist/`.
+
+---
+
 ## 🏗️ 8‑Layer Architecture Implementation
 
 ### Layer 1: Database (DB)
-**Location**: `packages/adapters/db/<module>/`  
+
+**Location**: `packages/adapters/src/db/<module>/`  
 **Responsibility**: Data persistence, schema, migrations
 
 ```ts
@@ -77,6 +122,7 @@ CREATE INDEX idx_<entity>_active ON <entity_plural>(is_active);
 ```
 
 **Optional DB hardening**
+
 - Multi‑tenant: add `tenant_id`, unique `(tenant_id, code)`, enable RLS
 - Hierarchy: add `path` (materialized path) or PostgreSQL `ltree` for fast subtree queries
 - Audit: `created_by`, `updated_by`
@@ -84,11 +130,12 @@ CREATE INDEX idx_<entity>_active ON <entity_plural>(is_active);
 ---
 
 ### Layer 2: Adapters
-**Location**: `packages/adapters/<module>/`  
+
+**Location**: `packages/adapters/src/<module>/`  
 **Responsibility**: Data access and transformations to/from DB (no business rules)
 
 ```ts
-// packages/adapters/<module>/<entity>-adapter.ts
+// packages/adapters/src/<module>/<entity>-adapter.ts
 import { eq, and, like } from 'drizzle-orm';
 import { <entity>Table } from '@aibos/adapters/db/<module>/schema';
 
@@ -114,11 +161,12 @@ export class <Entity>Adapter implements <Entity>Repository {
 ---
 
 ### Layer 3: Ports
-**Location**: `packages/ports/<module>/`  
+
+**Location**: `packages/ports/src/<module>/`  
 **Responsibility**: Interfaces (dependency inversion), pure types
 
 ```ts
-// packages/ports/<module>/<entity>-port.ts
+// packages/ports/src/<module>/<entity>-port.ts
 export type EntityKind = 'KIND_A' | 'KIND_B' | 'KIND_C'; // replace with domain enums
 export type NormalState = 'DEBIT' | 'CREDIT'; // example invariant pattern
 
@@ -169,11 +217,12 @@ export interface <Entity>Service {
 ---
 
 ### Layer 4: Services
-**Location**: `packages/services/<module>/`  
+
+**Location**: `packages/services/src/<module>/`  
 **Responsibility**: Business logic (policies enforced here), invariants
 
 ```ts
-// packages/services/<module>/<entity>-service.ts
+// packages/services/src/<module>/<entity>-service.ts
 import type { <Entity>Repository, <Entity>Service, SearchFilters, Update<Entity>Data } from '@aibos/ports/<module>/<entity>-port';
 import { <Entity>Policies } from '@aibos/policies/<module>/<entity>-policies';
 import { Logger } from '@aibos/ports/shared/logger-port';
@@ -226,11 +275,12 @@ export class <Entity>ServiceImpl implements <Entity>Service {
 ---
 
 ### Layer 5: Policies
-**Location**: `packages/policies/<module>/`  
+
+**Location**: `packages/policies/src/<module>/`  
 **Responsibility**: Business rules, validation, constraints (**instance methods**, not static)
 
 ```ts
-// packages/policies/<module>/<entity>-policies.ts
+// packages/policies/src/<module>/<entity>-policies.ts
 export class <Entity>Policies {
   async validateCreate(data: Create<Entity>Request): Promise<void> {
     if (!data.code || data.code.length < 3) throw new ValidationError('Code must be ≥ 3 chars');
@@ -259,11 +309,12 @@ export class <Entity>Policies {
 ---
 
 ### Layer 6: Contracts
-**Location**: `packages/contracts/<module>/`  
+
+**Location**: `packages/contracts/src/<module>/`  
 **Responsibility**: API contracts, types, schemas (strict unions)
 
 ```ts
-// packages/contracts/<module>/types.ts
+// packages/contracts/src/<module>/types.ts
 export type EntityKind = 'KIND_A' | 'KIND_B' | 'KIND_C';
 export type NormalState = 'DEBIT' | 'CREDIT';
 
@@ -278,7 +329,7 @@ export interface <Entity>Response {
 ```
 
 ```ts
-// packages/contracts/<module>/schemas.ts
+// packages/contracts/src/<module>/schemas.ts
 import { z } from 'zod';
 
 export const create<Entity>Schema = z.object({
@@ -307,32 +358,61 @@ export const <entity>ResponseSchema = z.object({
 ---
 
 ### Layer 7: API (BFF)
+
 **Location**: `apps/bff/app/api/<module>/`  
 **Responsibility**: HTTP endpoints, DI, request/response handling
 
 ```ts
 // apps/bff/app/api/<module>/route.ts
-import { <Entity>ServiceImpl } from '@aibos/services/<module>/<entity>-service';
-import { <Entity>Adapter } from '@aibos/adapters/<module>/<entity>-adapter';
-import { <Entity>Policies } from '@aibos/policies/<module>/<entity>-policies';
 import { create<Entity>Schema } from '@aibos/contracts/<module>/schemas';
-import { Logger } from '@aibos/adapters/shared/logger-adapter';
+import { create<Entity>Service } from '@/lib/factories/<entity>-service-factory';
 
 export async function POST(request: Request) {
   try {
     const data = create<Entity>Schema.parse(await request.json());
-    const service = new <Entity>ServiceImpl(new <Entity>Adapter(db), new <Entity>Policies(), new Logger());
+    const service = create<Entity>Service();
     const result = await service.create(data);
     return Response.json(result, { status: 201 });
   } catch (err) { return handleApiError(err); }
 }
 ```
 
-> **Note:** Prefer a small **route factory** to centralize DI for consistency and testability.
+**Route Factory Pattern** (recommended for DI consistency):
+
+```ts
+// apps/bff/lib/factories/<entity>-service-factory.ts
+import { <Entity>ServiceImpl } from '@aibos/services/<module>/<entity>-service';
+import { <Entity>Adapter } from '@aibos/adapters/<module>/<entity>-adapter';
+import { <Entity>Policies } from '@aibos/policies/<module>/<entity>-policies';
+import { Logger } from '@aibos/adapters/shared/logger-adapter';
+import { Database } from '@aibos/adapters/db';
+
+let serviceInstance: <Entity>ServiceImpl | null = null;
+
+export function create<Entity>Service(): <Entity>ServiceImpl {
+  if (!serviceInstance) {
+    const adapter = new <Entity>Adapter(db);
+    const policies = new <Entity>Policies();
+    const logger = new Logger();
+    serviceInstance = new <Entity>ServiceImpl(adapter, policies, logger);
+  }
+  return serviceInstance;
+}
+
+// For testing - allows injection of mocks
+export function create<Entity>ServiceWithDependencies(
+  adapter: <Entity>Adapter,
+  policies: <Entity>Policies,
+  logger: Logger
+): <Entity>ServiceImpl {
+  return new <Entity>ServiceImpl(adapter, policies, logger);
+}
+```
 
 ---
 
 ### Layer 8: UI
+
 **Location**: `apps/web/app/(dashboard)/<module>/`  
 **Responsibility**: UX (consume Contracts; no business rules)
 
@@ -356,24 +436,58 @@ export default function <Module>Page() {
 ## 🚫 Architectural Violations Prevention
 
 ### ESLint boundary rules (apply org‑wide)
+
 ```js
 // .eslintrc.js (excerpt)
 module.exports = {
   rules: {
-    'no-restricted-imports': ['error', { patterns: [
-      { group: ['apps/bff/app/lib/*'], message: 'API cannot import BFF internals' },
-      { group: ['apps/bff/app/services/*'], message: 'API cannot import BFF services' },
-    ]}],
-    'import/no-restricted-paths': ['error', { zones: [
-      { target: './apps/bff/app/api/**', from: './apps/bff/app/lib/**', message: 'API → BFF lib forbidden' },
-      { target: './apps/bff/app/api/**', from: './apps/bff/app/services/**', message: 'API → BFF services forbidden' },
-      { target: './packages/services/**', from: './apps/bff/**', message: 'Services cannot import BFF files' },
-    ]}],
-  }
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['apps/bff/lib/*'],
+            message:
+              'API cannot import BFF lib directly. Use @aibos/* packages.',
+          },
+        ],
+      },
+    ],
+    'import/no-restricted-paths': [
+      'error',
+      {
+        zones: [
+          {
+            target: './apps/bff/app/api/**',
+            from: './apps/bff/lib/**',
+            message: 'API routes cannot import BFF lib. Use @aibos/* packages.',
+          },
+          {
+            target: './apps/bff/app/api/**',
+            from: './apps/bff/components/**',
+            message: 'API routes cannot import BFF components.',
+          },
+          {
+            target: './packages/services/**',
+            from: './apps/bff/**',
+            message:
+              'Services cannot import from apps. Depend only on packages.',
+          },
+          {
+            target: './packages/services/**',
+            from: './apps/web/**',
+            message:
+              'Services cannot import from apps. Depend only on packages.',
+          },
+        ],
+      },
+    ],
+  },
 };
 ```
 
 ### Dependency Injection pattern
+
 ```ts
 export class <Entity>ServiceImpl {
   constructor(
@@ -394,58 +508,69 @@ export class <Entity>ServiceImpl {
 
 ```ts
 // packages/services/<module>/__tests__/<entity>-service.test.ts
-it('derives invariant on create and on kind change', async () => { /* … */ });
+it('derives invariant on create and on kind change', async () => {
+  /* … */
+});
 ```
 
 ---
 
 ## 📊 Quality Gates
 
-**Architecture**  
-- [ ] Zero ESLint boundary violations  
-- [ ] All 8 layers present with DI  
-- [ ] Policies use **instance** methods  
+**Architecture**
 
-**Type/Contracts**  
-- [ ] Strict unions in Contracts (no bare `string`)  
-- [ ] Zod schemas match types  
+- [ ] Zero ESLint boundary violations
+- [ ] All 8 layers present with DI
+- [ ] Policies use **instance** methods
 
-**Data Integrity**  
-- [ ] DB constraints for enums/invariants  
+**Type/Contracts**
+
+- [ ] Strict unions in Contracts (no bare `string`)
+- [ ] Zod schemas match types
+
+**Data Integrity**
+
+- [ ] DB constraints for enums/invariants
 - [ ] Optional multi‑tenant RLS in place
 
-**Tests**  
-- [ ] ≥ 90% coverage Services/Policies  
+**Tests**
+
+- [ ] ≥ 90% coverage Services/Policies
 - [ ] Invariant derivation tests green
 
-**Perf**  
-- [ ] API p95 < 200ms  
+**Perf**
+
+- [ ] API p95 < 200ms
 - [ ] Hierarchy ops scale to target size
 
 ---
 
 ## 🚀 Implementation Checklist
 
-**Phase 1: Foundation**  
-- [ ] Schema + migrations  
-- [ ] Adapter repo API  
-- [ ] Ports interfaces  
+**Phase 1: Foundation**
+
+- [ ] Schema + migrations
+- [ ] Adapter repo API
+- [ ] Ports interfaces
 - [ ] ESLint boundaries enabled
 
-**Phase 2: Business Logic**  
-- [ ] Service invariants + policies  
-- [ ] Contracts + Zod  
+**Phase 2: Business Logic**
+
+- [ ] Service invariants + policies
+- [ ] Contracts + Zod
 - [ ] Unit tests
 
-**Phase 3: API & UI**  
-- [ ] API handlers (with DI factory)  
-- [ ] UI pages + hooks  
+**Phase 3: API & UI**
+
+- [ ] API handlers (with DI factory)
+- [ ] UI pages + hooks
 - [ ] Integration tests
 
-**Phase 4: Deployment**  
-- [ ] Feature flag  
-- [ ] Monitoring & alerts  
-- [ ] Docs & runbook  
+**Phase 4: Deployment**
+
+- [ ] Feature flag
+- [ ] Monitoring & alerts
+- [ ] Docs & runbook
 - [ ] Production deploy
 
 ---
@@ -453,6 +578,7 @@ it('derives invariant on create and on kind change', async () => { /* … */ });
 ## 🔄 Rollback Procedures
 
 **Immediate (<5m)**
+
 ```bash
 pnpm feature:disable <MODULE>_NEW_ARCH
 pnpm deploy:rollback
@@ -460,6 +586,7 @@ pnpm health:check
 ```
 
 **Data**
+
 ```bash
 pnpm db:migrate:rollback
 pnpm db:restore:backup
@@ -475,15 +602,32 @@ pnpm db:restore:backup
 ---
 
 ## 📚 References
+
 - AIBOS Architecture & Boundary Guardrails (org‑wide)
 - Contracts & Testing Standards (org‑wide)
 
 ---
 
-### 🧩 How to instantiate this template for a new module in 5 steps
-1) **Search/replace** `<module>`, `<Module>`, `<Entity>` across this file and code blocks.  
-2) Pick your **domain enums** (replace `EntityKind`, `NormalState`).  
-3) Encode **derived invariant** logic in the Service (use M01 pattern).  
-4) Add **DB constraints** to enforce the invariant at the database.  
-5) Wire **route factory** + tests; run ESLint boundaries & coverage gates.
+### 🧩 How to instantiate this template for a new module in 6 steps
 
+1. **Search/replace** `<module>`, `<Module>`, `<Entity>` across this file and code blocks.
+2. **Create folder structure** following the canonical layout:
+   - Packages: `packages/{adapters,ports,services,policies,contracts}/src/<module>/`
+   - Apps: `apps/bff/app/api/<module>/`, `apps/bff/lib/factories/`, `apps/web/app/(dashboard)/<module>/`
+3. Pick your **domain enums** (replace `EntityKind`, `NormalState`).
+4. Encode **derived invariant** logic in the Service (use M01 pattern).
+5. Add **DB constraints** to enforce the invariant at the database.
+6. Wire **route factory** + tests; run ESLint boundaries & coverage gates.
+
+### 📁 Quick Folder Checklist
+
+- [ ] `packages/adapters/src/db/<module>/schema.ts`
+- [ ] `packages/adapters/src/<module>/<entity>-adapter.ts`
+- [ ] `packages/ports/src/<module>/<entity>-port.ts`
+- [ ] `packages/services/src/<module>/<entity>-service.ts`
+- [ ] `packages/policies/src/<module>/<entity>-policies.ts`
+- [ ] `packages/contracts/src/<module>/types.ts`
+- [ ] `packages/contracts/src/<module>/schemas.ts`
+- [ ] `apps/bff/app/api/<module>/route.ts`
+- [ ] `apps/bff/lib/factories/<entity>-service-factory.ts`
+- [ ] `apps/web/app/(dashboard)/<module>/page.tsx`

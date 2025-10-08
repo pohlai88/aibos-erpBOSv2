@@ -8,7 +8,7 @@ console.log('🔍 Verifying locked-down stack versions...');
 const expectedVersions = {
     node: '22.20.0',
     pnpm: '10.18.x',
-    next: '15.5.4',
+    next: '14.2.x',
     zod: '4.1.12',
     eslint: '9.36.0',
     prettier: '3.6.2',

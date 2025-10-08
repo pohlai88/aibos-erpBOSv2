@@ -2,27 +2,30 @@
   "name": "@aibos/main",
   "private": true,
   "version": "1.0.0",
-  "description": "AI-BOS main application",
+  "description": "AI-BOS Main Development Sandbox",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "tsx src/index.ts",
-    "build": "rimraf dist && tsc -p tsconfig.build.json",
-    "start": "node dist/index.js",
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
     "lint": "eslint .",
-    "type-check": "tsc -p tsconfig.build.json --noEmit",
-    "clean": "rimraf dist"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@aibos/auth": "workspace:*",
-    "@aibos/utils": "workspace:*"
+    "@aibos/config": "workspace:*",
+    "@aibos/contracts": "workspace:*",
+    "next": "14.2.33",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "aibos-ui": "^0.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.18.8",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "eslint": "9.36.0",
-    "rimraf": "6.0.1",
-    "tsx": "4.20.6",
     "typescript": "5.9.3"
   }
 }

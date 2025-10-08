@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo"
+  },
+  "include": ["src/**/*", "__tests__/**/*", "vitest.setup.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".cache",
+    ".turbo",
+    "coverage",
+    "build",
+    ".next",
+    "out"
+  ],
+  "references": [{ "path": "../ports" }]
+}

@@ -27,6 +27,7 @@ This document serves as the **Single Source of Truth (SSOT)** for all package co
 - **Version synchronization** across all packages using syncpack
 - **Consistent naming conventions** across the entire monorepo
 - **Standardized build processes** for all packages
+- **Unified TypeScript configuration** with no package-level overrides of core settings
 
 ### 2. Production-Ready Standards
 
@@ -34,6 +35,7 @@ This document serves as the **Single Source of Truth (SSOT)** for all package co
 - **Comprehensive type safety** with strict TypeScript configuration
 - **Automated quality checks** via pre-commit hooks
 - **Dependency isolation** using pnpm's isolated node linker
+- **Automated drift detection** preventing configuration inconsistencies
 
 ### 3. Monorepo Best Practices
 
@@ -41,6 +43,7 @@ This document serves as the **Single Source of Truth (SSOT)** for all package co
 - **Shared configuration** via base TypeScript configs
 - **Centralized tooling** with Turborepo task orchestration
 - **Incremental builds** with proper dependency graphs
+- **Single source of truth** for all compiler settings
 
 ## Package Manager Configuration
 
@@ -240,14 +243,21 @@ The syncpack configuration enforces version consistency across all packages:
 {
   "pnpm": {
     "overrides": {
-      "next": "15.5.4",
+      "next": "14.2.x",
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "@tanstack/react-query": "5.x",
+      "drizzle-orm": "0.34.x",
+      "drizzle-kit": "0.25.x",
+      "postgres": "3.4.x",
+      "pino": "9.x",
+      "typescript": "5.5.x",
       "zod": "4.1.12",
       "eslint": "9.36.0",
       "prettier": "3.6.2",
       "rimraf": "6.0.1",
       "syncpack": "13.0.4",
-      "tsx": "4.20.6",
-      "typescript": "5.9.3"
+      "tsx": "4.20.6"
     }
   }
 }
@@ -276,16 +286,20 @@ The syncpack configuration enforces version consistency across all packages:
     "@eslint/js": "^9.37.0",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "dependency-cruiser": "16.0.0",
+    "drizzle-kit": "~0.25.0",
     "eslint": "9.36.0",
     "eslint-plugin-boundaries": "^5.0.2",
+    "happy-dom": "^19.0.2",
     "prettier": "3.6.2",
     "rimraf": "6.0.1",
     "syncpack": "13.0.4",
     "tsup": "^8.0.0",
     "tsx": "4.20.6",
     "turbo": "2.5.8",
-    "typescript": "5.9.3"
+    "typescript": "5.5.4",
+    "vitest": "^3.2.4"
   }
 }
 ```
@@ -350,6 +364,8 @@ Every package MUST follow this structure:
 
 ### Base Configuration (`tsconfig.base.json`)
 
+**CRITICAL**: This is the single source of truth for all TypeScript compiler settings. No package may override core settings.
+
 ```json
 {
   "compilerOptions": {
@@ -357,40 +373,92 @@ Every package MUST follow this structure:
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "incremental": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@aibos/utils/*": ["packages/utils/src/*"],
       "@aibos/auth/*": ["packages/auth/src/*"],
-      "@aibos/bff/*": ["apps/bff/src/*"]
-    }
+      "@aibos/bff/*": ["apps/bff/src/*"],
+      "@aibos/contracts/*": ["packages/contracts/src/*"],
+      "@aibos/services/*": ["packages/services/src/*"],
+      "@aibos/ports/*": ["packages/ports/src/*"],
+      "@aibos/adapters/*": ["packages/adapters/src/*"],
+      "@aibos/policies/*": ["packages/policies/src/*"]
+    },
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo"
   }
 }
 ```
 
-### Package-Specific Build Config (`tsconfig.build.json`)
+### Package IDE Configuration (`tsconfig.json`)
+
+**For IDE support only** - inherits all settings from base:
 
 ```json
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist",
+    "composite": true,
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo"
+  },
+  "include": ["src"],
+  "references": [{ "path": "../ports" }]
+}
+```
+
+### Package Build Configuration (`tsconfig.build.json`)
+
+**For compilation and build** - extends base with build-specific settings:
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
     "rootDir": "./src",
+    "outDir": "./dist",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "composite": true
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo"
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
 }
 ```
+
+### Application Configuration
+
+**Apps may only override JSX setting** for Next.js compatibility:
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo"
+  },
+  "include": ["app", "src", "pages", "components", "next-env.d.ts"]
+}
+```
+
+### TypeScript Configuration Rules
+
+1. **NO ROOT `tsconfig.json`** - Only `tsconfig.base.json` exists at root
+2. **ALL packages MUST extend** `tsconfig.base.json`
+3. **NO overrides** of core settings (`moduleResolution`, `module`, `strict`, etc.)
+4. **Apps may only override** `jsx` setting
+5. **Build configs may override** build-specific settings only
+6. **Unified buildInfo location** in `./.cache/tsconfig.tsbuildinfo`
 
 ## Scripts Standardization
 
@@ -408,6 +476,7 @@ Every package MUST follow this structure:
     "verify:client": "node scripts/verify/client-gen.mjs",
     "verify:lint": "node scripts/verify/lint.mjs",
     "verify:types": "node scripts/verify/types.mjs",
+    "verify:tsconfig-drift": "node scripts/verify/tsconfig-drift.mjs",
     "syncpack:check": "pnpm -w exec syncpack list-mismatches",
     "syncpack:fix": "pnpm -w exec syncpack fix-mismatches",
     "verify:syncpack": "node scripts/verify/syncpack.mjs",
@@ -417,16 +486,19 @@ Every package MUST follow this structure:
     "depcruise": "depcruise --config .dependency-cruiser.cjs .",
     "contracts:check": "pnpm run verify:contracts",
     "client:gen": "pnpm run verify:client",
-    "dev": "turbo run dev --filter=./apps/main",
+    "dev": "turbo run dev",
     "build": "turbo run build",
-    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "test": "vitest run --coverage",
     "clean": "turbo run clean && pnpm -w store prune",
     "ci:contracts": "pnpm run contracts:check",
     "store:prune": "pnpm store prune",
     "dedupe": "pnpm -w dedupe",
     "lint": "pnpm run verify:lint",
-    "type-check": "pnpm run verify:types",
-    "pre-commit": "powershell -File .git/hooks/pre-commit"
+    "type-check": "pnpm run verify:tsconfig-drift && pnpm run verify:types",
+    "pre-commit": "powershell -File .git/hooks/pre-commit",
+    "fix:deps": "pnpm install --frozen-lockfile=false && pnpm dedupe",
+    "postinstall": "echo 'Postinstall completed'"
   }
 }
 ```
@@ -588,6 +660,9 @@ The pre-commit hook enforces:
 Run these commands to validate configuration:
 
 ```bash
+# Check TSConfig drift (CRITICAL - runs first)
+pnpm run verify:tsconfig-drift
+
 # Check version consistency
 pnpm run verify:versions
 
@@ -606,9 +681,29 @@ pnpm run verify:depcruise
 # Check linting
 pnpm run verify:lint
 
-# Check types
-pnpm run verify:types
+# Check types (includes drift check)
+pnpm run type-check
 ```
+
+### TSConfig Drift Detection
+
+The `verify:tsconfig-drift` script enforces SSOT compliance by:
+
+1. **Validating core settings** across all packages
+2. **Preventing overrides** of critical compiler options
+3. **Allowing only approved exceptions** (JSX for apps, build settings)
+4. **Failing CI/CD** if drift is detected
+5. **Providing clear error messages** for violations
+
+**Enforced Settings:**
+
+- `moduleResolution: "bundler"`
+- `module: "ESNext"`
+- `strict: true`
+- `verbatimModuleSyntax: true`
+- `skipLibCheck: true`
+- `noUncheckedIndexedAccess: true`
+- `exactOptionalPropertyTypes: true`
 
 ## Migration Guidelines
 
@@ -616,10 +711,15 @@ pnpm run verify:types
 
 1. **Create package directory** in `packages/` or `apps/`
 2. **Initialize package.json** following the standard structure
-3. **Add TypeScript configuration** extending base config
-4. **Update workspace references** in `tsconfig.base.json`
-5. **Add to syncpack groups** if needed
-6. **Run verification scripts** to ensure compliance
+3. **Create `tsconfig.json`** extending base config (IDE support)
+4. **Create `tsconfig.build.json`** extending base config (build)
+5. **Update workspace references** in `tsconfig.base.json` paths
+6. **Add to syncpack groups** if needed
+7. **Run verification scripts** to ensure compliance:
+   ```bash
+   pnpm run verify:tsconfig-drift
+   pnpm run type-check
+   ```
 
 ### Updating Dependencies
 
@@ -644,8 +744,11 @@ Before committing any package changes, ensure:
 - [ ] Package name follows `@aibos/{name}` convention
 - [ ] Internal dependencies use `workspace:*`
 - [ ] Build scripts follow standard patterns
-- [ ] TypeScript config extends base configuration
+- [ ] **TypeScript config extends base configuration** (NO overrides)
+- [ ] **Both `tsconfig.json` and `tsconfig.build.json` exist** for packages
+- [ ] **No root `tsconfig.json`** (only `tsconfig.base.json`)
 - [ ] Version ranges comply with syncpack groups
+- [ ] **TSConfig drift check passes**: `pnpm run verify:tsconfig-drift`
 - [ ] All verification scripts pass
 - [ ] No legacy files present
 - [ ] PowerShell compatibility maintained
@@ -658,8 +761,8 @@ Before committing any package changes, ensure:
 If configuration drift is detected:
 
 1. **Stop all development** immediately
-2. **Run full verification suite**: `pnpm run turbo:verify`
-3. **Identify drift sources** using syncpack and verification reports
+2. **Run TSConfig drift check**: `pnpm run verify:tsconfig-drift`
+3. **Identify drift sources** using verification reports
 4. **Apply fixes systematically** following this document
 5. **Re-run verification** until all checks pass
 6. **Document the incident** and prevention measures
@@ -687,5 +790,20 @@ This document MUST be updated whenever:
 - Configuration drift is discovered
 
 **Last Updated**: 2025-01-07
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Maintainer**: AI-BOS Development Team
+
+---
+
+## Changelog
+
+### Version 2.0.0 (2025-01-07)
+
+- **BREAKING**: Implemented TSConfig drift prevention system
+- **BREAKING**: Removed root `tsconfig.json` in favor of `tsconfig.base.json` only
+- **BREAKING**: Enforced strict TypeScript settings across all packages
+- **NEW**: Added `verify:tsconfig-drift` script for automated compliance checking
+- **NEW**: Separated IDE (`tsconfig.json`) and build (`tsconfig.build.json`) configurations
+- **NEW**: Unified `tsBuildInfoFile` locations to `./.cache/tsconfig.tsbuildinfo`
+- **IMPROVED**: Updated dependency versions to match actual project state
+- **IMPROVED**: Enhanced enforcement rules and compliance checklist

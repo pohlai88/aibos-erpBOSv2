@@ -1,15 +1,36 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
-const tseslint = require('@typescript-eslint/eslint-plugin');
-const tsParser = require('@typescript-eslint/parser');
-const boundaries = require('eslint-plugin-boundaries');
+import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import boundariesPlugin from 'eslint-plugin-boundaries';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
 });
 
-module.exports = [
+export default [
+  // --- GLOBAL IGNORE (must be first, no "files" key) ---
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/.next/types/**',
+      '**/.next/static/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.turbo/**',
+      '**/.cache/**',
+      '**/coverage/**',
+      '**/out/**'
+    ],
+  },
+
   // --- Base JS recommended on everything ---
   ...compat.extends('eslint:recommended'),
 
@@ -18,7 +39,6 @@ module.exports = [
     settings: {
       // Map your repo layout to logical "element types"
       'boundaries/elements': [
-        { type: 'app', pattern: 'apps/*' },
         { type: 'web', pattern: 'apps/web' },
         { type: 'bff', pattern: 'apps/bff' },
         { type: 'worker', pattern: 'apps/worker' },
@@ -36,57 +56,56 @@ module.exports = [
       ],
     },
     plugins: {
-      boundaries,
+      '@typescript-eslint': tseslint,
+      boundaries: boundariesPlugin,
     },
   },
 
   // --- TypeScript (non type-checked) pass for speed ---
   {
     files: ['**/*.ts', '**/*.tsx'],
+    // keep TS parser OFF of d.ts and build artifacts entirely
+    ignores: [
+      '**/*.d.ts',
+      '**/next-env.d.ts',
+      '**/.next/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.turbo/**',
+      '**/.cache/**',
+      '**/coverage/**',
+      '**/out/**'
+    ],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        project: [
+          './packages/*/tsconfig.json',
+          './apps/*/tsconfig.json',
+        ],
+        tsconfigRootDir: __dirname,
         ecmaVersion: 'latest',
         sourceType: 'module',
-      },
-      globals: {
-        fetch: 'readonly',
-        Request: 'readonly',
-        Response: 'readonly',
-        Headers: 'readonly',
-        FormData: 'readonly',
-        URL: 'readonly',
-        URLSearchParams: 'readonly',
-        AbortController: 'readonly',
-        console: 'readonly',
-        process: 'readonly',
-        setTimeout: 'readonly',
-        crypto: 'readonly',
-        Buffer: 'readonly',
-        File: 'readonly',
-        ResponseInit: 'readonly',
-        global: 'readonly',
-        TextEncoder: 'readonly',
-        TextDecoder: 'readonly',
-        NodeJS: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-        __dirname: 'readonly',
-        // Browser globals
-        window: 'readonly',
-        document: 'readonly',
-        localStorage: 'readonly',
-        alert: 'readonly',
-        React: 'readonly',
-        HTMLInputElement: 'readonly',
-        performance: 'readonly',
       },
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      boundaries,
+      boundaries: boundariesPlugin,
     },
     rules: {
+      /**
+       * Enforce & AUTO-FIX type-only imports/exports.
+       * Works hand-in-hand with "verbatimModuleSyntax": true.
+       */
+      '@typescript-eslint/consistent-type-imports': ['error', {
+        prefer: 'type-imports',
+        disallowTypeAnnotations: false,
+        fixStyle: 'separate-type-imports'
+      }],
+      '@typescript-eslint/consistent-type-exports': ['error', {
+        fixMixedExportsWithInlineTypeSpecifier: true
+      }],
+
       // Module boundaries: reference element types, not paths
       'boundaries/element-types': [
         'error',
@@ -145,8 +164,18 @@ module.exports = [
         },
       ],
 
-      // Keep safety nets on, but less noisy during velocity work
-      '@typescript-eslint/no-explicit-any': 'off', // Temporarily disabled during development
+      // TypeScript strict mode - enforce type safety
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/restrict-template-expressions': ['error', {
+        allowNumber: true,
+        allowBoolean: true,
+        allowNullish: true,
+      }],
 
       // Let TS handle unused vars
       'no-unused-vars': 'off',
@@ -195,6 +224,13 @@ module.exports = [
             "Use 'export const METHOD = withRouteErrors(async ...)' instead of 'export async function METHOD'",
         },
         {
+          // Catch exported const handlers like: export const GET = async () => ...
+          selector:
+            "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name=/^(GET|POST|PUT|PATCH|DELETE|OPTIONS)$/]",
+          message:
+            "Wrap exported route handlers: 'export const METHOD = withRouteErrors(async ...)'",
+        },
+        {
           selector:
             "CallExpression[callee.object.name='Response'][callee.property.name='json']",
           message:
@@ -212,10 +248,36 @@ module.exports = [
 
   // --- Tests & scripts loosened ---
   {
-    files: ['**/*.test.*', '**/*.spec.*', 'scripts/**'],
+    files: ['**/*.test.*', '**/*.spec.*', 'scripts/**/*.{js,ts,mjs,cjs,tsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+
+  // --- Adapters package - Relax strict type checking for Drizzle ORM ---
+  {
+    files: ['packages/adapters/**/*.ts'],
+    ignores: ['packages/adapters/**/*.test.*', 'packages/adapters/**/*.spec.*'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+    },
+  },
+
+  // --- UI/Client components - Relax strict type checking for presentation layer ---
+  {
+    files: ['apps/web/**/*.tsx', 'apps/web/**/*.ts'],
+    ignores: ['apps/web/**/*.test.*', 'apps/web/**/*.spec.*'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
     },
   },
 
@@ -227,11 +289,17 @@ module.exports = [
     },
   },
 
-  // --- Next.js env shim ---
+  // --- TypeScript declaration files - disable type-aware rules ---
   {
-    files: ['**/next-env.d.ts'],
+    files: ['**/*.d.ts', '**/next-env.d.ts'],
     rules: {
       '@typescript-eslint/triple-slash-reference': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 
@@ -252,6 +320,7 @@ module.exports = [
         console: 'readonly',
         process: 'readonly',
         setTimeout: 'readonly',
+        clearTimeout: 'readonly',
         crypto: 'readonly',
         Buffer: 'readonly',
         File: 'readonly',
@@ -268,6 +337,7 @@ module.exports = [
         document: 'readonly',
         localStorage: 'readonly',
         alert: 'readonly',
+        confirm: 'readonly',
         React: 'readonly',
         HTMLInputElement: 'readonly',
         performance: 'readonly',
@@ -284,6 +354,8 @@ module.exports = [
       '**/.turbo/**',
       '**/build/**',
       '**/out/**',
+      '**/.next/static/**',
+      '**/.next/types/**',
     ],
   },
 ];

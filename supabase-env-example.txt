@@ -1,0 +1,25 @@
+# Supabase Configuration for AIBOS ERP
+# Copy this to .env.local in each app directory
+
+# Supabase Project Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://esfsgpfhixjorcrtpmlv.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZnNncGZoaXhqb3JjcnRwbWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5MDY2MzIsImV4cCI6MjA3NTQ4MjYzMn0.LJlp2jhL0XmqEiV7-Pi2_rUxawBvTgczZsLhy7cQlBs
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZnNncGZoaXhqb3JjcnRwbWx2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNjYzMiwiZXhwIjoyMDc1NDgyNjMyfQ.ig-f8lUfzcPo_MZYjBqgGpQ2R3TrczF0pbD90Xwfv78
+
+# Database Connection (Production Supabase)
+DATABASE_URL=postgresql://postgres:Weepohlai88!@db.esfsgpfhixjorcrtpmlv.supabase.co:6543/postgres
+
+# Database Connection (Local Docker - for development)
+# DATABASE_URL=postgresql://postgres:Weepohlai88!@localhost:54322/postgres
+
+# Feature Flags
+NEXT_PUBLIC_FEATURE_M01=on
+NEXT_PUBLIC_FEATURE_M02=off
+NEXT_PUBLIC_FEATURE_M03=off
+
+# App URLs
+NEXT_PUBLIC_BFF_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_WEB_SANDBOX_BASE_URL=http://localhost:3002
+
+# JWT Secret (for Supabase)
+SUPABASE_JWT_SECRET=nZdbGp7g/N3WwHoB1KRL1a+Xbj4F/avqojR13xu+/q/tGrPll+UWXMPFAUWL69Cl34HKtGNpeG3i++KSKuncfQ==

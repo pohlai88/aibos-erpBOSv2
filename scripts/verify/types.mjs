@@ -2,12 +2,13 @@
 
 import { spawn } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const cmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 
 console.log('🔍 Running TypeScript type checking...');
 
-// Run TypeScript compiler
+// Run TypeScript compiler in each package/app using their own tsconfig.json
 const args = ['-r', 'exec', 'tsc', '--noEmit', '--pretty'];
 
 const p = spawn(cmd, args, {

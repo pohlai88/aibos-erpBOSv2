@@ -1,0 +1,37 @@
+{
+    "name": "@aibos/contracts",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./core-ledger/*": {
+            "import": "./dist/core-ledger/*.js",
+            "types": "./dist/core-ledger/*.d.ts"
+        },
+        "./shared/*": {
+            "import": "./dist/shared/*.js",
+            "types": "./dist/shared/*.d.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsc -b",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "dev": "tsx watch ./src/index.ts",
+        "test": "vitest run"
+    },
+    "dependencies": {
+        "zod": "4.1.12"
+    },
+    "devDependencies": {
+        "typescript": "5.9.3",
+        "vitest": "^3.2.4",
+        "tsx": "4.20.6"
+    }
+}

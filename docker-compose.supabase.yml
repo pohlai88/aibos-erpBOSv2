@@ -1,0 +1,23 @@
+services:
+  supabase-db:
+    image: postgres:15
+    container_name: aibos-supabase-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Weepohlai88!
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "54322:5432"
+    volumes:
+      - supabase_db_data:/var/lib/postgresql/data
+      - ./supabase/init:/docker-entrypoint-initdb.d
+    networks:
+      - aibos-network
+
+volumes:
+  supabase_db_data:
+
+networks:
+  aibos-network:
+    driver: bridge

@@ -1,22 +1,41 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "target": "ES2022",
     "lib": ["ES2022", "DOM"],
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "incremental": true,
+    "declaration": true,
+    "declarationMap": true,
+    "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
       "@aibos/utils/*": ["packages/utils/src/*"],
       "@aibos/auth/*": ["packages/auth/src/*"],
-      "@aibos/bff/*": ["apps/bff/src/*"]
+      "@aibos/bff/*": ["apps/bff/src/*"],
+      "@aibos/contracts/*": ["packages/contracts/src/*"],
+      "@aibos/services/*": ["packages/services/src/*"],
+      "@aibos/ports/*": ["packages/ports/src/*"],
+      "@aibos/adapters/*": ["packages/adapters/src/*"],
+      "@aibos/policies/*": ["packages/policies/src/*"]
     }
-  }
+  },
+  "include": [],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/build/**",
+    "**/.turbo/**",
+    "**/.cache/**",
+    "**/coverage/**",
+    "**/out/**"
+  ]
 }
