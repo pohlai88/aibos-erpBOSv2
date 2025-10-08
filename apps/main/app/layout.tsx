@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AIBOS Main Dev Sandbox',
-  description: 'Development and testing dashboard for AIBOS ERP modules',
+  title: 'AIBOS ERP - Module Launcher',
+  description: 'Master dashboard for launching and testing AIBOS ERP modules',
 };
 
 export default function RootLayout({
@@ -12,8 +12,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }): React.JSX.Element {
   return (
-    <html lang="en">
-      <body className="bg-gray-900 text-white min-h-screen">
+    <html lang="en" style={{ colorScheme: 'dark' }}>
+      <body
+        className="min-h-screen"
+        style={{
+          background: 'hsl(var(--aibos-semantic-background))',
+          color: 'hsl(var(--aibos-semantic-foreground))',
+          fontFamily: 'var(--aibos-font-family-sans)',
+          fontSize: 'var(--aibos-font-size-base)',
+          fontWeight: 'var(--aibos-font-weight-normal)',
+          lineHeight: '1.55'
+        }}
+      >
         {children}
       </body>
     </html>

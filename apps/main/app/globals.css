@@ -1,11 +1,66 @@
-@tailwindcss /base;
-@tailwindcss /components;
-@tailwindcss /utilities;
+@import 'tailwindcss/preflight';
+@tailwind utilities;
 
+/* aibos-ui enhanced styling */
+@import 'aibos-ui/dist/index.css';
+
+/* ===== AIBOS ERP Premium Color Override ===== */
+/* Only override colors, keep all aibos-ui typography, spacing, animations */
+
+:root {
+  /* Override only the premium color palette */
+  --aibos-neutral-0: 11 12 16; /* #0b0c10 - Deep background */
+  --aibos-neutral-50: 17 18 23; /* #111217 - Panel */
+  --aibos-neutral-100: 20 23 34; /* #141722 - Card */
+  --aibos-neutral-200: 26 31 43; /* #1a1f2b - Chip */
+  --aibos-neutral-300: 35 38 52; /* #232634 - Border */
+  --aibos-neutral-400: 138 143 152; /* #8a8f98 - Muted */
+  --aibos-neutral-500: 232 233 237; /* #e8e9ed - Text */
+  --aibos-neutral-600: 232 233 237; /* #e8e9ed - Text */
+  --aibos-neutral-700: 232 233 237; /* #e8e9ed - Text */
+  --aibos-neutral-800: 232 233 237; /* #e8e9ed - Text */
+  --aibos-neutral-900: 232 233 237; /* #e8e9ed - Text */
+
+  /* Premium brand colors */
+  --aibos-brand-400: 78 161 255; /* #4ea1ff - Brand */
+  --aibos-brand-500: 78 161 255; /* #4ea1ff - Brand */
+  --aibos-brand-600: 139 92 246; /* #8b5cf6 - Brand gradient */
+
+  /* Premium accent */
+  --aibos-accent-500: 6 182 212; /* #06b6d4 - Accent */
+
+  /* Premium semantic colors for dark theme */
+  --aibos-semantic-background: 11 12 16; /* #0b0c10 */
+  --aibos-semantic-foreground: 232 233 237; /* #e8e9ed */
+  --aibos-semantic-card: 20 23 34; /* #141722 */
+  --aibos-semantic-card-foreground: 232 233 237; /* #e8e9ed */
+  --aibos-semantic-border: 35 38 52; /* #232634 */
+  --aibos-semantic-input: 26 31 43; /* #1a1f2b */
+  --aibos-semantic-ring: 78 161 255; /* #4ea1ff */
+  --aibos-semantic-primary: 78 161 255; /* #4ea1ff */
+  --aibos-semantic-primary-foreground: 255 255 255; /* #ffffff */
+  --aibos-semantic-muted: 26 31 43; /* #1a1f2b */
+  --aibos-semantic-muted-foreground: 138 143 152; /* #8a8f98 */
+  --aibos-semantic-accent: 6 182 212; /* #06b6d4 */
+  --aibos-semantic-accent-foreground: 255 255 255; /* #ffffff */
+  --aibos-semantic-destructive: 255 71 87; /* #ff4757 */
+  --aibos-semantic-destructive-foreground: 255 255 255; /* #ffffff */
+
+  /* Premium gradients */
+  --aibos-bg-gradient: linear-gradient(180deg, #0b0c10 0%, #0e1117 100%);
+  --aibos-card-gradient: linear-gradient(135deg, #141722 0%, #1a1f2b 100%);
+  --aibos-primary-gradient: linear-gradient(135deg, #4ea1ff, #8b5cf6);
+
+  /* Premium shadows */
+  --aibos-shadow-elev-1: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --aibos-shadow-elev-2: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --aibos-shadow-elev-3: 0 24px 50px rgba(0, 0, 0, 0.55);
+
+  /* Force dark theme */
+  color-scheme: dark;
+}
+
+/* Override body background to use premium gradient */
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: var(--aibos-bg-gradient) !important;
 }

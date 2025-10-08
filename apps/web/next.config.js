@@ -11,6 +11,14 @@ const nextConfig = {
     // Don't allow prod builds with lint errors
     ignoreDuringBuilds: false,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3000/api/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

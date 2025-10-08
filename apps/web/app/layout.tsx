@@ -14,8 +14,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }): React.JSX.Element {
     return (
-        <html lang="en">
-            <body>
+        <html lang="en" style={{ colorScheme: 'dark' }}>
+            <body
+                className="min-h-screen"
+                style={{
+                    background: 'hsl(var(--aibos-semantic-background))',
+                    color: 'hsl(var(--aibos-semantic-foreground))',
+                    fontFamily: 'var(--aibos-font-family-sans)',
+                    fontSize: 'var(--aibos-font-size-base)',
+                    fontWeight: 'var(--aibos-font-weight-normal)',
+                    lineHeight: '1.55'
+                }}
+            >
                 <Providers>
                     {children}
                 </Providers>
